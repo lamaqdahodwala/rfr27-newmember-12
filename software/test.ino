@@ -14,8 +14,8 @@ const int CUTOFF = 0;
 int reg = 0;
 
 // for testing purposes. these all need to be chekced
-int millivoltDropPerDegreeC=-6;
-double degreeCPerStep = 0.6667;
+int millivoltDropPerDegreeC=6;
+double degreeCPerStep = -0.6667;
 double restingVoltage = 533.9;
 
 
