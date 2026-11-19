@@ -2,12 +2,14 @@
 
 
 bool isFlashing = false;
+bool isFlashingBad = false;
 const int a = 4;
 const int b = 5; 
 const int c = 6;
 const int input = A1;
 const int led = 3; 
 double temps[8];
+double tempsF[8];
 
 // TODO: Set a cutoff voltage under which the resistor is hotter than 60 degrees celsius.
 const int CUTOFF = 0;
@@ -47,6 +49,7 @@ void requestEvent(){
 void loop() {
   // track the minimum voltage (highest temperature)
   double maxTemp = -1024;
+  double maxTempF = -1024;
   for (int currentSelection = 0; currentSelection < 8; ++currentSelection) {
 
     digitalWrite(a, bitRead(currentSelection, 0));
@@ -78,21 +81,35 @@ void loop() {
     
 
     double temperature = 22+(degreeCPerStep*(average - restingVoltage));
+    double temperatureF = (1.8*temperature) + 32;
+
     temps[currentSelection] = temperature;
+    tempsF[currentSelection] = temperatureF;
+
     if (temperature > maxTemp){
       maxTemp = temperature;
+      maxTempF = temperatureF;
     }
     // Serial.println(temps[currentSelection]);
   }
   
   Serial.println(maxTemp);
+  Serial.println("Temperature in F: ");
+  Serial.println(maxTempF);
   if (maxTemp > 60){
     isFlashing = true;
+    isFlashingBad = false;
+    if (maxTemp > 80){
+      isFlashingBad = true;
+    }
   } else {
     isFlashing = false;
+    isFlashingBad = false;
   }
 
-  if (isFlashing) {
+  if (isFlashingBad){
+    digitalWrite(led, HIGH);
+  } else if (isFlashing) {
     digitalWrite(led, HIGH);
     delay(100);
     Serial.println("Turn on");
@@ -100,5 +117,4 @@ void loop() {
     delay(100);
     Serial.println("Turn off");
   }
-  
 }
